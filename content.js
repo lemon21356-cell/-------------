@@ -1,6 +1,6 @@
 // 웹페이지 환경에서 window.Entry에 접근하기 위해 script 태그를 만들어 삽입합니다.
 function injectScript() {
-  const scriptContent = 
+  const scriptContent = `
     try {
       if (typeof Entry === 'undefined' || !Entry.getMainWS()) {
         alert('엔트리 만들기 화면이 아닙니다.');
@@ -42,7 +42,7 @@ function injectScript() {
       console.error('블록 청소 중 오류:', e);
       alert('오류가 발생했습니다. 개발자 도구를 확인해주세요.');
     }
-  ;
+  `;
 
   const script = document.createElement('script');
   script.textContent = scriptContent;
