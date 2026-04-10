@@ -1,15 +1,16 @@
 {
   "manifest_version": 3,
-  "name": "엔트리 블록 청소기",
-  "version": "1.0",
-  "description": "엔트리 화면에 직접 둥근 버튼을 띄워 흩어진 블록을 삭제합니다.",
-  
+  "name": "엔트리 블록 청소",
+  "version": "1.2",
+  "description": "엔트리 화면에 버튼을 띄워 연결되지 않은 블록을 삭제합니다.",
   "icons": {
-    "16": "icon.png",
-    "48": "icon.png",
     "128": "icon.png"
   },
-
+  "permissions": ["scripting"],
+  "host_permissions": ["*://playentry.org/*"],
+  "action": {
+    "default_title": "엔트리 청소기 실행"
+  },
   "content_scripts": [
     {
       "matches": ["*://playentry.org/*"],
@@ -17,7 +18,6 @@
       "run_at": "document_idle"
     }
   ],
-
   "web_accessible_resources": [
     {
       "resources": ["btn_icon.png"],
