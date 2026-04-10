@@ -1,8 +1,7 @@
 {
   "manifest_version": 3,
   "name": "엔트리 블록 청소기",
-  "version": "1.4",
-  "description": "보안 오류 없이 엔트리 블록을 청소합니다.",
+  "version": "1.5",
   "icons": {
     "128": "icon.png"
   },
