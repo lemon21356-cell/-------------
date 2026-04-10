@@ -3,9 +3,7 @@
  */
 function cleanEntryBlocks() {
   try {
-    // 엔트리 워크스페이스 확인
     if (typeof Entry === 'undefined' || !Entry.getMainWS() || !Entry.getMainWS().board) {
-      console.log("엔트리 조립소 화면이 아닙니다.");
       return;
     }
 
@@ -13,36 +11,26 @@ function cleanEntryBlocks() {
     const threads = board.code.getThreads();
     let deletedCount = 0;
 
-    // 시작 블록이 연결되지 않은 스레드 필터링
     const threadsToRemove = threads.filter(thread => {
       const first = thread.getFirstBlock();
       if (!first) return false;
-      
       const type = first.type;
       const isStartBlock = 
-        type.includes('when_') || 
-        type.includes('start_') || 
-        type.includes('mouse_') || 
-        type.includes('key_press') || 
+        type.includes('when_') || type.includes('start_') || 
+        type.includes('mouse_') || type.includes('key_press') || 
         type === 'func_def';
-
       return !isStartBlock;
     });
 
-    // 필터링된 블록 삭제
-    threadsToRemove.forEach(t => {
-      t.destroy();
-      deletedCount++;
-    });
+    threadsToRemove.forEach(t => { t.destroy(); deletedCount++; });
 
-    // 결과 알림
     if (deletedCount > 0) {
-      Entry.toast.success('청소 완료', deletedCount + '개의 흩어진 블록을 삭제했습니다.');
+      Entry.toast.success('청소 완료', deletedCount + '개의 블록을 삭제했습니다.');
     } else {
-      Entry.toast.alert('알림', '삭제할 흩어진 블록이 없습니다.');
+      Entry.toast.alert('알림', '삭제할 블록이 없습니다.');
     }
   } catch (e) {
-    console.error("블록 청소 중 오류 발생:", e);
+    console.error("청소 중 오류:", e);
   }
 }
 
@@ -55,12 +43,18 @@ function createCleanerButton() {
   const btn = document.createElement('button');
   btn.id = 'entry-cleaner-btn';
 
-  // 이미지 경로 설정
-  // world: MAIN 에서는 chrome.runtime.getURL을 쓸 수 없으므로 엔트리용 확장프로그램 경로를 직접 생성합니다.
-  const extensionId = "YOUR_EXTENSION_ID"; // 아래 주의사항 참고
-  const iconUrl = 'chrome-extension://' + chrome.runtime.id + '/btn_icon.png';
+  // --- 오류 수정 구간 시작 ---
+  // world: "MAIN"에서 chrome.runtime.id를 읽지 못할 경우를 대비하여 
+  // 이미지 경로를 안전하게 가져오는 방법입니다.
+  let iconUrl = "";
+  try {
+    iconUrl = chrome.runtime.getURL('btn_icon.png');
+  } catch (e) {
+    // 만약 위 코드가 실패하면 엔트리의 기본 아이콘을 임시로 사용합니다.
+    iconUrl = "https://playentry.org/img/assets/btn_confirm_check.png";
+  }
+  // --- 오류 수정 구간 끝 ---
 
-  // 스타일 설정
   Object.assign(btn.style, {
     position: 'fixed',
     bottom: '30px',
@@ -80,7 +74,6 @@ function createCleanerButton() {
     transition: 'transform 0.2s'
   });
 
-  // 호버 효과
   btn.onmouseover = () => btn.style.transform = 'scale(1.1)';
   btn.onmouseout = () => btn.style.transform = 'scale(1)';
 
@@ -90,5 +83,5 @@ function createCleanerButton() {
   document.body.appendChild(btn);
 }
 
-// 2초마다 실행하여 엔트리 로딩 완료 후 버튼 생성
+// 버튼 생성 실행
 setInterval(createCleanerButton, 2000);
