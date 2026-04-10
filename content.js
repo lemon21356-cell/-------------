@@ -35,7 +35,7 @@ function cleanEntryBlocks() {
 }
 
 /**
- * 2. 화면에 띄울 버튼 생성
+ * 2. 상단 메뉴에 아이콘 버튼 생성
  */
 function createCleanerButton() {
   if (document.getElementById('entry-cleaner-btn')) return;
@@ -43,45 +43,36 @@ function createCleanerButton() {
   const btn = document.createElement('button');
   btn.id = 'entry-cleaner-btn';
 
-  // --- 오류 수정 구간 시작 ---
-  // world: "MAIN"에서 chrome.runtime.id를 읽지 못할 경우를 대비하여 
-  // 이미지 경로를 안전하게 가져오는 방법입니다.
-  let iconUrl = "";
-  try {
-    iconUrl = chrome.runtime.getURL('btn_icon.png');
-  } catch (e) {
-    // 만약 위 코드가 실패하면 엔트리의 기본 아이콘을 임시로 사용합니다.
-    iconUrl = "https://playentry.org/img/assets/btn_confirm_check.png";
-  }
-  // --- 오류 수정 구간 끝 ---
+  // 이미지 경로 설정 (이미지가 안 나오면 주소 부분을 외부 링크로 바꿔보세요)
+  const iconUrl = chrome.runtime.getURL('btn_icon.png');
 
   Object.assign(btn.style, {
-    position: 'fixed',
-    bottom: '30px',
-    right: '30px',
-    width: '60px',
-    height: '60px',
-    backgroundColor: '#5B67FF',
+    position: 'absolute',
+    top: '10px',            // 위에서 10px 내려옴 (사진의 빨간 동그라미 위치)
+    left: '420px',          // 왼쪽에서 420px 이동 (탭 메뉴 옆)
+    width: '32px',          // 아이콘 크기
+    height: '32px',
+    backgroundColor: 'transparent', // 배경 투명
     backgroundImage: 'url(' + iconUrl + ')',
-    backgroundSize: '50%',
+    backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
-    borderRadius: '50%',
     border: 'none',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
     cursor: 'pointer',
-    zIndex: '999999',
-    transition: 'transform 0.2s'
+    zIndex: '999',          // 메뉴 위에 보이도록
+    transition: 'opacity 0.2s'
   });
 
-  btn.onmouseover = () => btn.style.transform = 'scale(1.1)';
-  btn.onmouseout = () => btn.style.transform = 'scale(1)';
+  // 호버 시 살짝 투명하게 해서 눌리는 느낌 주기
+  btn.onmouseover = () => btn.style.opacity = '0.7';
+  btn.onmouseout = () => btn.style.opacity = '1';
 
-  // 클릭 시 삭제 실행
   btn.onclick = cleanEntryBlocks;
 
-  document.body.appendChild(btn);
+  // 엔트리의 메뉴 바 영역(속성 탭 등이 있는 곳)을 찾아 버튼을 붙입니다.
+  const targetParent = document.querySelector('.entryWorkspaceBoardV2') || document.body;
+  targetParent.appendChild(btn);
 }
 
-// 버튼 생성 실행
+// 2초마다 확인하여 버튼 생성
 setInterval(createCleanerButton, 2000);
