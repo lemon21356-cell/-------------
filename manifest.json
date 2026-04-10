@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "엔트리 블록 청소",
+  "name": "엔트리 블록 청소기",
   "version": "1.0",
-  "description": "엔트리 만들기 화면에서 연결되지 않은 흩어진 블록을 삭제합니다.",
+  "description": "엔트리 화면에 직접 둥근 버튼을 띄워 흩어진 블록을 삭제합니다.",
   
   "icons": {
     "16": "icon.png",
@@ -10,20 +10,18 @@
     "128": "icon.png"
   },
 
-  "action": {
-    "default_popup": "popup.html",
-    "default_icon": {
-      "16": "icon.png",
-      "48": "icon.png",
-      "128": "icon.png"
+  "content_scripts": [
+    {
+      "matches": ["*://playentry.org/*"],
+      "js": ["content.js"],
+      "run_at": "document_idle"
     }
-  },
-  
-  "permissions": [
-    "activeTab",
-    "scripting"
   ],
-  "host_permissions": [
-    "*://playentry.org/*"
+
+  "web_accessible_resources": [
+    {
+      "resources": ["btn_icon.png"],
+      "matches": ["*://playentry.org/*"]
+    }
   ]
 }
