@@ -1,21 +1,17 @@
 {
   "manifest_version": 3,
-  "name": "엔트리 블록 청소",
-  "version": "1.2",
-  "description": "엔트리 화면에 버튼을 띄워 연결되지 않은 블록을 삭제합니다.",
+  "name": "엔트리 블록 청소기",
+  "version": "1.4",
+  "description": "보안 오류 없이 엔트리 블록을 청소합니다.",
   "icons": {
     "128": "icon.png"
-  },
-  "permissions": ["scripting"],
-  "host_permissions": ["*://playentry.org/*"],
-  "action": {
-    "default_title": "엔트리 청소기 실행"
   },
   "content_scripts": [
     {
       "matches": ["*://playentry.org/*"],
       "js": ["content.js"],
-      "run_at": "document_idle"
+      "run_at": "document_idle",
+      "world": "MAIN"
     }
   ],
   "web_accessible_resources": [
