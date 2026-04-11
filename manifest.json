@@ -2,12 +2,16 @@
   "manifest_version": 3,
   "name": "엔트리 블록 청소기",
   "version": "1.5",
+  "description": "워크스페이스에서만 작동하는 블록 청소기입니다.",
   "icons": {
     "128": "icon.png"
   },
   "content_scripts": [
     {
-      "matches": ["*://playentry.org/*"],
+      "matches": [
+        "*://playentry.org/ws*", 
+        "*://playentry.org/project/editor/*"
+      ],
       "js": ["content.js"],
       "run_at": "document_idle",
       "world": "MAIN"
