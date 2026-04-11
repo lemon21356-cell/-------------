@@ -1,12 +1,11 @@
 /**
- * 1. 블록 삭제 핵심 로직
+ * 1. 블록 삭제 로직 (기존과 동일)
  */
 function cleanEntryBlocks() {
   try {
     if (typeof Entry === 'undefined' || !Entry.getMainWS() || !Entry.getMainWS().board) {
       return;
     }
-
     const board = Entry.getMainWS().board;
     const threads = board.code.getThreads();
     let deletedCount = 0;
@@ -15,11 +14,9 @@ function cleanEntryBlocks() {
       const first = thread.getFirstBlock();
       if (!first) return false;
       const type = first.type;
-      const isStartBlock = 
-        type.includes('when_') || type.includes('start_') || 
-        type.includes('mouse_') || type.includes('key_press') || 
-        type === 'func_def';
-      return !isStartBlock;
+      return !(type.includes('when_') || type.includes('start_') || 
+               type.includes('mouse_') || type.includes('key_press') || 
+               type === 'func_def');
     });
 
     threadsToRemove.forEach(t => { t.destroy(); deletedCount++; });
@@ -35,53 +32,45 @@ function cleanEntryBlocks() {
 }
 
 /**
- * 2. 화면에 띄울 버튼 생성
+ * 2. 아이콘 전용 버튼 생성
  */
 function createCleanerButton() {
-  if (document.getElementById('entry-cleaner-btn')) return;
+  // 이미 버튼이 있거나, 만들기 페이지(/ws)가 아니면 생성하지 않음
+  if (document.getElementById('entry-cleaner-btn') || !window.location.href.includes('/ws')) return;
 
   const btn = document.createElement('button');
   btn.id = 'entry-cleaner-btn';
 
-  // --- 이미지 경로 설정 최적화 ---
-  // manifest.json의 web_accessible_resources에 등록된 btn_icon.png를 불러옵니다.
-  // world: "MAIN" 환경에서는 아래와 같이 직접 URL을 구성하는 것이 가장 안전합니다.
-  const extensionId = document.currentScript ? new URL(document.currentScript.src).host : "";
-  const iconUrl = `chrome-extension://${extensionId}/btn_icon.png`;
+  // 이미지 경로 설정
+  const iconUrl = chrome.runtime.getURL('btn_icon.png');
 
   Object.assign(btn.style, {
     position: 'fixed',
     bottom: '30px',
     right: '30px',
-    width: '60px',
-    height: '60px',
-    backgroundColor: '#5B67FF',
-    // 이미지를 배경으로 설정
+    width: '50px',
+    height: '50px',
+    // 배경색을 투명하게 하여 아이콘만 보이게 함
+    backgroundColor: 'transparent', 
     backgroundImage: `url(${iconUrl})`,
-    backgroundSize: '30px', // 아이콘 크기 조절
+    backgroundSize: 'contain',
     backgroundRepeat: 'no-repeat',
     backgroundPosition: 'center',
-    borderRadius: '50%',
     border: 'none',
-    boxShadow: '0 4px 12px rgba(0,0,0,0.3)',
     cursor: 'pointer',
     zIndex: '999999',
-    transition: 'all 0.2s ease-in-out'
+    transition: 'transform 0.2s',
+    // 선택사항: 약간의 그림자를 주어 아이콘을 식별하기 쉽게 함
+    filter: 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))'
   });
 
-  // 호버 효과
-  btn.onmouseover = () => {
-    btn.style.transform = 'scale(1.1)';
-    btn.style.backgroundColor = '#4A56E2';
-  };
-  btn.onmouseout = () => {
-    btn.style.transform = 'scale(1)';
-    btn.style.backgroundColor = '#5B67FF';
-  };
+  // 호버 효과: 살짝 커지게
+  btn.onmouseover = () => btn.style.transform = 'scale(1.1)';
+  btn.onmouseout = () => btn.style.transform = 'scale(1)';
 
   btn.onclick = cleanEntryBlocks;
   document.body.appendChild(btn);
 }
 
-// 버튼 생성 주기적 확인 (엔트리 로딩 대기)
+// 2초마다 페이지 상태를 확인하여 버튼 생성 시도
 setInterval(createCleanerButton, 2000);
