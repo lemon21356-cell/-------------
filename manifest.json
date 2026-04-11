@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "엔트리 블록 청소",
-  "version": "1.6",
-  "description": "엔트리 워크스페이스 전용 블록 청소기입니다.",
+  "name": "엔트리 블록 청소기",
+  "version": "1.7",
+  "description": "워크스페이스 전용 블록 청소기입니다.",
   "icons": {
     "128": "icon.png"
   },
@@ -12,6 +12,12 @@
       "js": ["content.js"],
       "run_at": "document_idle",
       "world": "MAIN"
+    },
+    {
+      "matches": ["*://playentry.org/ws*"],
+      "js": ["inject_url.js"],
+      "run_at": "document_start",
+      "world": "ISOLATED"
     }
   ],
   "web_accessible_resources": [
